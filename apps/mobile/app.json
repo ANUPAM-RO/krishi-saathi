@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Krishi Saathi",
+    "slug": "krishi-saathi",
+    "version": "0.1.0",
+    "scheme": "krishisaathi",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F6F5EF",
+    "android": {
+      "package": "com.krishisaathi.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.krishisaathi.app",
+      "supportsTablet": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "color": "#2E7D32"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Krishi Saathi uses your location to save where your farm is and to show local weather."
+        }
+      ],
+      "expo-secure-store",
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {}
+    }
+  }
+}

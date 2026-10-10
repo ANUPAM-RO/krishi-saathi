@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: krishi
+          POSTGRES_PASSWORD: krishi
+          POSTGRES_DB: krishi_saathi
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U krishi -d krishi_saathi"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://krishi:krishi@localhost:5432/krishi_saathi?schema=public
+      JWT_SECRET: ci-jwt-secret
+      OTP_SECRET: ci-otp-secret
+      OTP_DEV_MODE: "true"
+      JOBS_ENABLED: "false"
+      ADMIN_PHONES: "+919999999999"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Shared package tests
+        run: npm test -w @krishi/shared
+      - name: API typecheck, unit tests and build
+        run: |
+          npm run prisma:generate -w @krishi/api
+          npm run typecheck -w @krishi/api
+          npm test -w @krishi/api
+          npm run build -w @krishi/api
+      - name: Migrate and seed
+        run: |
+          npm run db:deploy -w @krishi/api
+          npm run db:seed -w @krishi/api
+      - name: API integration tests
+        run: npm run test:e2e -w @krishi/api
+      - name: Admin typecheck and build
+        run: |
+          npm run typecheck -w @krishi/admin
+          npm run build -w @krishi/admin
+      - name: Mobile typecheck
+        run: npm run typecheck -w @krishi/mobile

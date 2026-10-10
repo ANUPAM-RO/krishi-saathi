@@ -1,0 +1,26 @@
+import type { ActivityRange } from './types';
+import type { MandiPriceQuery, WeatherQuery } from './endpoints';
+
+export const qk = {
+  dashboard: ['dashboard'] as const,
+  me: ['me'] as const,
+  farms: ['farms'] as const,
+  farm: (id: string) => ['farms', id] as const,
+  crops: ['crops'] as const,
+  farmerCrops: ['farmer-crops'] as const,
+  farmerCrop: (id: string) => ['farmer-crops', id] as const,
+  profit: (id: string) => ['farmer-crops', id, 'profit'] as const,
+  activitiesAll: ['activities'] as const,
+  activities: (range: ActivityRange) => ['activities', range] as const,
+  activityLookup: (id: string) => ['activities', 'lookup', id] as const,
+  expensesAll: ['expenses'] as const,
+  expenses: (farmerCropId?: string) => ['expenses', farmerCropId ?? 'all'] as const,
+  weatherCurrent: (q: WeatherQuery) => ['weather', 'current', q] as const,
+  weatherForecast: (q: WeatherQuery) => ['weather', 'forecast', q] as const,
+  mandis: ['mandis'] as const,
+  mandiPrices: (q: MandiPriceQuery) => ['mandi-prices', q] as const,
+  mandiCrop: (cropId: string, district?: string) => ['mandi-prices', 'crop', cropId, district ?? ''] as const,
+  notificationsAll: ['notifications'] as const,
+  notifications: ['notifications', 'list'] as const,
+  advisories: (language: string) => ['advisories', language] as const,
+};

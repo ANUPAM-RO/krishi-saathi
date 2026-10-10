@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: krishi-saathi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: krishi
+      POSTGRES_PASSWORD: krishi
+      POSTGRES_DB: krishi_saathi
+    ports:
+      - "5433:5432"
+    volumes:
+      - krishi_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U krishi -d krishi_saathi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  krishi_pg:

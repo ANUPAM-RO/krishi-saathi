@@ -1,0 +1,23 @@
+{
+  "name": "krishi-saathi",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Krishi Saathi — local-language farming assistant (MVP)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "build:shared": "npm run build -w @krishi/shared",
+    "dev:api": "npm run start:dev -w @krishi/api",
+    "dev:admin": "npm run dev -w @krishi/admin",
+    "dev:mobile": "npm run start -w @krishi/mobile",
+    "test": "npm run test -w @krishi/shared && npm run test -w @krishi/api",
+    "postinstall": "npm run build:shared"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
