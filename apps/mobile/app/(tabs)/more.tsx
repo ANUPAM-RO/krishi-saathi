@@ -62,6 +62,22 @@ export default function MoreScreen() {
           onPress={() => router.push('/notifications')}
         />
         <ListItem icon="bulb" title={t('more.advisories')} onPress={() => router.push('/advisories')} />
+        <ListItem
+          icon="storefront"
+          iconBg={colors.accentLight}
+          iconColor={colors.accent}
+          title={t('more.suppliers')}
+          subtitle={t('more.suppliersHint')}
+          onPress={() => router.push('/suppliers')}
+        />
+        <ListItem
+          icon="business"
+          iconBg={colors.infoLight}
+          iconColor={colors.info}
+          title={t('more.schemes')}
+          subtitle={t('more.schemesHint')}
+          onPress={() => router.push('/schemes')}
+        />
         <ListItem icon="person-circle" title={t('more.profile')} onPress={() => router.push('/settings/profile')} />
         <ListItem
           icon="language"

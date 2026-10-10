@@ -1,7 +1,12 @@
+import { Platform } from 'react-native';
 import type { ApiErrorBody, RefreshResponse } from './types';
 import { clearTokens, loadTokens, saveTokens } from './tokens';
 
-export const API_URL = (process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:4000/api').replace(/\/+$/, '');
+// 10.0.2.2 is the Android emulator's alias for the host machine; a browser needs localhost instead.
+const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:4000/api';
+export const API_URL = (
+  Platform.OS === 'web' ? configuredUrl.replace('//10.0.2.2', '//localhost') : configuredUrl
+).replace(/\/+$/, '');
 
 const DEFAULT_TIMEOUT_MS = 15_000;
 

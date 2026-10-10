@@ -1,4 +1,11 @@
-import type { ActivityType, ExpenseCategory, FarmerCropStatus, NotificationType } from '@krishi/shared';
+import type {
+  ActivityType,
+  ExpenseCategory,
+  FarmerCropStatus,
+  NotificationType,
+  SchemeCategory,
+  SupplierCategory,
+} from '@krishi/shared';
 import type { IconName } from '@/components/Icon';
 import { colors } from '@/theme';
 
@@ -38,4 +45,20 @@ export const STATUS_COLORS: Record<FarmerCropStatus, string> = {
   ACTIVE: colors.primary,
   HARVESTED: colors.accent,
   FAILED: colors.danger,
+};
+
+export const SUPPLIER_ICONS: Record<SupplierCategory, IconName> = {
+  TRACTOR: 'car-sport',
+  PUMP: 'water',
+  FERTILIZER: 'flask',
+  SEED: 'leaf',
+  PESTICIDE: 'bug',
+};
+
+export const SCHEME_ICONS: Record<SchemeCategory, IconName> = {
+  INCOME_SUPPORT: 'cash',
+  INSURANCE: 'shield-checkmark',
+  CREDIT: 'card',
+  SUBSIDY: 'pricetags',
+  OTHER: 'document-text',
 };

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { PrismaClient } from '@prisma/client';
+import { Language, PrismaClient } from '@prisma/client';
 import {
   addDays,
   calculateExpectedHarvestDate,
@@ -7,6 +7,7 @@ import {
   todayInIndia,
 } from '@krishi/shared';
 import { ACTIVITY_LIBRARY, ADVISORIES, CROPS, MANDIS } from './seed-data';
+import { SAMPLE_SUPPLIERS, SCHEMES } from './seed-directory';
 
 const prisma = new PrismaClient();
 
@@ -207,11 +208,50 @@ async function seedAdvisories() {
   console.log(`✓ ${created} new advisories`);
 }
 
+async function seedSchemes() {
+  const admin = await prisma.user.findUnique({ where: { phone: ADMIN_PHONE }, select: { id: true } });
+  let created = 0;
+  for (const s of SCHEMES) {
+    for (const [language, text] of Object.entries(s.text) as [Language, (typeof s.text)[Language]][]) {
+      const exists = await prisma.governmentScheme.findFirst({ where: { title: text.title, language }, select: { id: true } });
+      if (exists) continue;
+      await prisma.governmentScheme.create({
+        data: {
+          ...text,
+          language,
+          category: s.category,
+          state: s.state,
+          applyUrl: s.applyUrl,
+          helpline: s.helpline,
+          isPublished: true,
+          publishedAt: new Date(),
+          createdById: admin?.id,
+        },
+      });
+      created++;
+    }
+  }
+  console.log(`✓ ${created} new government scheme entries`);
+}
+
+async function seedSuppliers() {
+  let created = 0;
+  for (const s of SAMPLE_SUPPLIERS) {
+    const exists = await prisma.supplier.findFirst({ where: { name: s.name, source: SAMPLE_SOURCE }, select: { id: true } });
+    if (exists) continue;
+    await prisma.supplier.create({ data: { ...s, state: 'West Bengal', source: SAMPLE_SOURCE } });
+    created++;
+  }
+  console.log(`✓ ${created} new sample suppliers (source="${SAMPLE_SOURCE}")`);
+}
+
 async function main() {
   await seedCrops();
   await seedMandisAndPrices();
   await seedUsers();
   await seedAdvisories();
+  await seedSchemes();
+  await seedSuppliers();
 }
 
 main()

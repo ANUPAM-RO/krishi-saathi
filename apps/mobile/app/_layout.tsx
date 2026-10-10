@@ -1,6 +1,6 @@
 import '@/i18n';
 import { QueryClientProvider } from '@tanstack/react-query';
-import * as Notifications from 'expo-notifications';
+import type { NotificationResponse } from 'expo-notifications';
 import { Stack, router, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import type { NotificationData } from '@/api/types';
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { AppText } from '@/components';
-import { hrefForNotificationData } from '@/lib/push';
+import { Notifications, hrefForNotificationData } from '@/lib/push';
 import { queryClient, startQueryPersistence } from '@/lib/queryClient';
 import { colors, fontSize } from '@/theme';
 
@@ -51,8 +51,9 @@ function useNotificationRouting(ready: boolean) {
   const handled = useRef(new Set<string>());
 
   useEffect(() => {
-    if (!ready) return;
-    const open = (response: Notifications.NotificationResponse | null) => {
+    if (!ready || !Notifications) return;
+    const notifications = Notifications;
+    const open = (response: NotificationResponse | null) => {
       if (!response) return;
       const id = response.notification.request.identifier;
       if (handled.current.has(id)) return;
@@ -61,12 +62,12 @@ function useNotificationRouting(ready: boolean) {
       const href = hrefForNotificationData(data);
       router.push(href ?? '/notifications');
       // Do not open the same notification again on the next app start.
-      Notifications.clearLastNotificationResponseAsync().catch(() => undefined);
+      notifications.clearLastNotificationResponseAsync().catch(() => undefined);
     };
     let sub: { remove: () => void } | null = null;
     try {
-      Notifications.getLastNotificationResponseAsync().then(open).catch(() => undefined);
-      sub = Notifications.addNotificationResponseReceivedListener(open);
+      notifications.getLastNotificationResponseAsync().then(open).catch(() => undefined);
+      sub = notifications.addNotificationResponseReceivedListener(open);
     } catch {
       // Notifications unavailable on this platform.
     }
@@ -126,6 +127,9 @@ function RootNavigator() {
           <Stack.Screen name="mandi-price/[cropId]" options={{ title: t('mandi.title') }} />
           <Stack.Screen name="notifications" options={{ title: t('notifications.title') }} />
           <Stack.Screen name="advisories" options={{ title: t('advisories.title') }} />
+          <Stack.Screen name="suppliers" options={{ title: t('suppliers.title') }} />
+          <Stack.Screen name="schemes/index" options={{ title: t('schemes.title') }} />
+          <Stack.Screen name="schemes/[id]" options={{ title: t('schemes.detailTitle') }} />
           <Stack.Screen name="settings/profile" options={{ title: t('profile.editTitle') }} />
           <Stack.Screen name="settings/language" options={{ title: t('language.settingsTitle') }} />
         </Stack.Protected>

@@ -35,6 +35,10 @@ import type {
   VerifyOtpResponse,
   WeatherAlert,
   WeatherAlertInput,
+  Scheme,
+  SchemeInput,
+  Supplier,
+  SupplierInput,
 } from './types';
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
@@ -260,6 +264,20 @@ export const adminApi = {
     request<Paged<AdminNotification>>('/admin/notifications', { query: { ...q } }),
   sendNotification: (body: SendNotificationInput) =>
     request<SendNotificationResult>('/admin/notifications/send', { method: 'POST', body }),
+
+  suppliers: (q: PageQuery & { search?: string; category?: string; district?: string }) =>
+    request<Paged<Supplier>>('/admin/suppliers', { query: { ...q } }),
+  createSupplier: (body: SupplierInput) => request<Supplier>('/admin/suppliers', { method: 'POST', body }),
+  updateSupplier: (id: string, body: Partial<SupplierInput>) =>
+    request<Supplier>(`/admin/suppliers/${id}`, { method: 'PUT', body }),
+  deleteSupplier: (id: string) => request<void>(`/admin/suppliers/${id}`, { method: 'DELETE' }),
+
+  schemes: (q: PageQuery & { category?: string; language?: string }) =>
+    request<Paged<Scheme>>('/admin/schemes', { query: { ...q } }),
+  createScheme: (body: SchemeInput) => request<Scheme>('/admin/schemes', { method: 'POST', body }),
+  updateScheme: (id: string, body: Partial<SchemeInput>) =>
+    request<Scheme>(`/admin/schemes/${id}`, { method: 'PUT', body }),
+  deleteScheme: (id: string) => request<void>(`/admin/schemes/${id}`, { method: 'DELETE' }),
 
   auditLogs: (q: PageQuery & { entity?: string }) =>
     request<Paged<AuditLog>>('/admin/audit-logs', { query: { ...q } }),

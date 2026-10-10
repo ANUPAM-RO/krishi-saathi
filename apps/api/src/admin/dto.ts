@@ -6,10 +6,13 @@ import {
   Language,
   NotificationType,
   PriceUnit,
+  SchemeCategory,
+  SupplierCategory,
 } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsDateString,
@@ -20,6 +23,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  IsUrl,
   Matches,
   Max,
   MaxLength,
@@ -204,3 +208,52 @@ export class AdminNotificationQueryDto extends PaginationQueryDto {
 export class AuditLogQueryDto extends PaginationQueryDto {
   @IsOptional() @IsString() @MaxLength(50) entity?: string;
 }
+
+// ---------- Suppliers & government schemes ----------
+
+export class AdminSupplierQueryDto extends PaginationQueryDto {
+  @IsOptional() @IsString() @MaxLength(100) search?: string;
+  @IsOptional() @IsEnum(SupplierCategory) category?: SupplierCategory;
+  @IsOptional() @IsString() @MaxLength(100) district?: string;
+}
+
+export class CreateSupplierDto {
+  @IsString() @IsNotEmpty() @MaxLength(150) name: string;
+  @IsArray() @ArrayMinSize(1) @ArrayMaxSize(5) @IsEnum(SupplierCategory, { each: true }) categories: SupplierCategory[];
+  @IsOptional() @IsString() @MaxLength(100) contactPerson?: string;
+  @IsOptional() @IsString() @Matches(/^\+?[0-9 -]{8,16}$/, { message: 'phone must be digits, optionally with + and spaces' })
+  phone?: string;
+  @IsOptional() @IsString() @MaxLength(300) address?: string;
+  @IsOptional() @IsString() @MaxLength(100) village?: string;
+  @IsString() @IsNotEmpty() @MaxLength(100) district: string;
+  @IsString() @IsNotEmpty() @MaxLength(100) state: string;
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(-90) @Max(90) latitude?: number;
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(-180) @Max(180) longitude?: number;
+  @IsOptional() @IsString() @MaxLength(1000) description?: string;
+  @IsOptional() @IsBoolean() isVerified?: boolean;
+  @IsOptional() @IsBoolean() isActive?: boolean;
+}
+
+export class UpdateSupplierDto extends PartialType(CreateSupplierDto) {}
+
+export class AdminSchemeQueryDto extends PaginationQueryDto {
+  @IsOptional() @IsEnum(SchemeCategory) category?: SchemeCategory;
+  @IsOptional() @IsEnum(Language) language?: Language;
+}
+
+export class CreateSchemeDto {
+  @IsString() @IsNotEmpty() @MaxLength(200) title: string;
+  @IsString() @IsNotEmpty() @MaxLength(1000) summary: string;
+  @IsEnum(SchemeCategory) category: SchemeCategory;
+  @IsOptional() @IsString() @MaxLength(3000) benefits?: string;
+  @IsOptional() @IsString() @MaxLength(3000) eligibility?: string;
+  @IsOptional() @IsString() @MaxLength(3000) howToApply?: string;
+  @IsOptional() @IsString() @MaxLength(3000) documents?: string;
+  @IsOptional() @IsUrl({ protocols: ['https', 'http'], require_protocol: true }) @MaxLength(500) applyUrl?: string;
+  @IsOptional() @IsString() @MaxLength(50) helpline?: string;
+  @IsEnum(Language) language: Language;
+  @IsOptional() @IsString() @MaxLength(100) state?: string;
+  @IsOptional() @IsBoolean() isPublished?: boolean;
+}
+
+export class UpdateSchemeDto extends PartialType(CreateSchemeDto) {}

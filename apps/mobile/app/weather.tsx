@@ -1,4 +1,3 @@
-import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -7,9 +6,21 @@ import { isApiError } from '@/api/client';
 import type { WeatherQuery } from '@/api/endpoints';
 import { useFarms, useWeatherCurrent, useWeatherForecast } from '@/api/hooks';
 import type { WeatherAlert, WeatherDay } from '@/api/types';
-import { AppText, Button, Card, Chips, EmptyState, Icon, QueryBoundary, Screen, SectionHeader } from '@/components';
+import {
+  AppText,
+  Button,
+  Card,
+  Chips,
+  EmptyState,
+  Icon,
+  LoadingState,
+  QueryBoundary,
+  Screen,
+  SectionHeader,
+} from '@/components';
 import { StaleWarning, WeatherNow } from '@/features/Cards';
 import { formatDate, formatRelativeDay, formatTimeAgo, weekdayName } from '@/lib/format';
+import { LocationError, useDeviceLocation } from '@/lib/location';
 import { isRainDay, weatherVisual } from '@/lib/weather';
 import { colors, radius, spacing } from '@/theme';
 
@@ -19,42 +30,31 @@ export default function WeatherScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ farmId?: string }>();
   const farms = useFarms();
+  const device = useDeviceLocation();
+  const coords = device.coords;
   const [selected, setSelected] = useState<string | null>(params.farmId ?? null);
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 
   const farmList = farms.data ?? [];
-  const effectiveFarmId = selected && selected !== MY_LOCATION ? selected : farmList[0]?.id;
-  const q: WeatherQuery =
-    selected === MY_LOCATION && coords ? { lat: coords.lat, lon: coords.lon } : effectiveFarmId ? { farmId: effectiveFarmId } : {};
-  const hasTarget = !!q.farmId || q.lat != null;
+  // Default to the phone's live location; fall back to the first farm when it is unavailable.
+  const choice = selected ?? (coords ? MY_LOCATION : farmList[0]?.id);
+  const usingGps = choice === MY_LOCATION && !!coords;
+  const q: WeatherQuery = usingGps ? { lat: coords.lat, lon: coords.lon } : choice ? { farmId: choice } : {};
+  const waitingForGps = !selected && device.isPending;
+  const hasTarget = !waitingForGps && (!!q.farmId || q.lat != null);
 
   const current = useWeatherCurrent(q, hasTarget);
   const forecast = useWeatherForecast(q, hasTarget);
 
   const captureMyLocation = async () => {
     setLocationError(null);
-    setLocating(true);
     try {
-      const perm = await Location.requestForegroundPermissionsAsync();
-      if (perm.status !== 'granted') {
-        setLocationError(t('errors.locationDenied'));
-        return;
-      }
-      const pos =
-        (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }).catch(() => null)) ??
-        (await Location.getLastKnownPositionAsync().catch(() => null));
-      if (!pos) {
-        setLocationError(t('errors.locationFailed'));
-        return;
-      }
-      setCoords({ lat: Math.round(pos.coords.latitude * 1e4) / 1e4, lon: Math.round(pos.coords.longitude * 1e4) / 1e4 });
+      await device.refresh();
       setSelected(MY_LOCATION);
-    } catch {
-      setLocationError(t('errors.locationFailed'));
-    } finally {
-      setLocating(false);
+    } catch (e) {
+      setLocationError(
+        t(e instanceof LocationError && e.reason === 'denied' ? 'errors.locationDenied' : 'errors.locationFailed'),
+      );
     }
   };
 
@@ -68,8 +68,8 @@ export default function WeatherScreen() {
   };
 
   const options = [
-    ...farmList.map((f) => ({ value: f.id, label: f.name, icon: 'map' as const })),
     ...(coords ? [{ value: MY_LOCATION, label: t('weather.myLocation'), icon: 'navigate' as const }] : []),
+    ...farmList.map((f) => ({ value: f.id, label: f.name, icon: 'map' as const })),
   ];
 
   return (
@@ -78,7 +78,7 @@ export default function WeatherScreen() {
         <View style={{ gap: spacing.sm }}>
           <AppText variant="label">{t('weather.chooseFarm')}</AppText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Chips value={selected ?? effectiveFarmId ?? null} onChange={setSelected} options={options} />
+            <Chips value={choice ?? null} onChange={setSelected} options={options} />
           </ScrollView>
         </View>
       ) : null}
@@ -87,7 +87,7 @@ export default function WeatherScreen() {
         variant="outline"
         size="medium"
         icon="navigate"
-        loading={locating}
+        loading={device.isLocating}
         onPress={captureMyLocation}
       />
       {locationError ? (
@@ -96,7 +96,9 @@ export default function WeatherScreen() {
         </AppText>
       ) : null}
 
-      {!hasTarget ? (
+      {waitingForGps ? (
+        <LoadingState />
+      ) : !hasTarget ? (
         <QueryBoundary query={farms}>
           {() => <EmptyState icon="partly-sunny-outline" message={t('weather.noFarm')} />}
         </QueryBoundary>
@@ -108,7 +110,7 @@ export default function WeatherScreen() {
                 current={data.current}
                 fetchedAt={data.fetchedAt}
                 isStale={data.isStale}
-                label={data.location.label}
+                label={usingGps ? t('weather.myLocation') : data.location.label}
               />
             )}
           </QueryBoundary>

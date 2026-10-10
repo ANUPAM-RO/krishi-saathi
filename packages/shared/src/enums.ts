@@ -51,3 +51,9 @@ export type PriceUnit = (typeof PRICE_UNITS)[number];
 
 export const ALERT_SEVERITIES = ['INFO', 'WARNING', 'SEVERE'] as const;
 export type AlertSeverity = (typeof ALERT_SEVERITIES)[number];
+
+export const SUPPLIER_CATEGORIES = ['TRACTOR', 'PUMP', 'FERTILIZER', 'SEED', 'PESTICIDE'] as const;
+export type SupplierCategory = (typeof SUPPLIER_CATEGORIES)[number];
+
+export const SCHEME_CATEGORIES = ['INCOME_SUPPORT', 'INSURANCE', 'CREDIT', 'SUBSIDY', 'OTHER'] as const;
+export type SchemeCategory = (typeof SCHEME_CATEGORIES)[number];

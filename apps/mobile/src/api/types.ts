@@ -10,7 +10,9 @@ import type {
   NotificationType,
   PriceUnit,
   Role,
+  SchemeCategory,
   SoilType,
+  SupplierCategory,
 } from '@krishi/shared';
 
 /** ISO-8601 timestamp. Date-only fields are midnight UTC; use the first 10 characters. */
@@ -377,3 +379,44 @@ export interface ExpenseBody {
 }
 
 export type ActivityRange = 'today' | 'upcoming' | 'overdue' | 'completed';
+
+export interface Supplier {
+  id: string;
+  name: string;
+  categories: SupplierCategory[];
+  contactPerson: string | null;
+  phone: string | null;
+  address: string | null;
+  village: string | null;
+  district: string;
+  state: string;
+  latitude: number | null;
+  longitude: number | null;
+  description: string | null;
+  isVerified: boolean;
+  /** Straight-line distance from the farmer; null when the supplier has no map location. */
+  distanceKm: number | null;
+}
+
+export interface NearbySuppliers {
+  location: { latitude: number; longitude: number; label: string };
+  radiusKm: number;
+  items: Supplier[];
+}
+
+export interface Scheme {
+  id: string;
+  title: string;
+  summary: string;
+  category: SchemeCategory;
+  benefits: string | null;
+  eligibility: string | null;
+  howToApply: string | null;
+  documents: string | null;
+  applyUrl: string | null;
+  helpline: string | null;
+  language: Language;
+  /** null = central (all-India) scheme. */
+  state: string | null;
+  publishedAt: IsoDate | null;
+}

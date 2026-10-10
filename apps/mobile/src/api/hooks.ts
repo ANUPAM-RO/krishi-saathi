@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import { api, type MandiPriceQuery, type WeatherQuery } from './endpoints';
+import { api, type MandiPriceQuery, type SupplierQuery, type WeatherQuery } from './endpoints';
 import { qk } from './queryKeys';
 import type {
   Activity,
@@ -9,6 +9,7 @@ import type {
   Expense,
   ExpenseBody,
   FarmBody,
+  Scheme,
   UpdateFarmerCropBody,
   UpdateProfileBody,
 } from './types';
@@ -110,6 +111,27 @@ export const useNotifications = () =>
 
 export const useAdvisories = (language: string) =>
   useQuery({ queryKey: qk.advisories(language), queryFn: () => api.advisories.list({ language }) });
+
+export const useNearbySuppliers = (q: SupplierQuery, enabled = true) =>
+  useQuery({ queryKey: qk.suppliers(q), queryFn: () => api.suppliers.nearby(q), enabled });
+
+export const useSchemes = (language: string) =>
+  useQuery({ queryKey: qk.schemes(language), queryFn: () => api.schemes.list({ language }) });
+
+/** One scheme; shows the copy from an already-loaded list while the detail request runs. */
+export const useScheme = (id: string | undefined) => {
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: qk.scheme(id ?? ''),
+    queryFn: () => api.schemes.get(id!),
+    enabled: !!id,
+    placeholderData: () =>
+      qc
+        .getQueriesData<Scheme[]>({ queryKey: qk.schemesAll })
+        .flatMap(([, data]) => (Array.isArray(data) ? data : []))
+        .find((s) => s.id === id),
+  });
+};
 
 // ---------- mutations ----------
 

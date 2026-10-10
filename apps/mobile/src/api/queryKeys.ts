@@ -1,5 +1,5 @@
 import type { ActivityRange } from './types';
-import type { MandiPriceQuery, WeatherQuery } from './endpoints';
+import type { MandiPriceQuery, SupplierQuery, WeatherQuery } from './endpoints';
 
 export const qk = {
   dashboard: ['dashboard'] as const,
@@ -23,4 +23,8 @@ export const qk = {
   notificationsAll: ['notifications'] as const,
   notifications: ['notifications', 'list'] as const,
   advisories: (language: string) => ['advisories', language] as const,
+  suppliers: (q: SupplierQuery) => ['suppliers', q] as const,
+  schemesAll: ['schemes'] as const,
+  schemes: (language: string) => ['schemes', language] as const,
+  scheme: (id: string) => ['schemes', 'detail', id] as const,
 };

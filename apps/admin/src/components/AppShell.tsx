@@ -1,9 +1,11 @@
 'use client';
 
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GrassIcon from '@mui/icons-material/Grass';
+import HandymanIcon from '@mui/icons-material/Handyman';
 import HistoryIcon from '@mui/icons-material/History';
 import LandscapeIcon from '@mui/icons-material/Landscape';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -44,6 +46,8 @@ const NAV: { href: string; label: string; icon: ReactNode }[] = [
   { href: '/mandi-prices', label: 'Mandi Prices', icon: <StorefrontIcon /> },
   { href: '/weather-alerts', label: 'Weather Alerts', icon: <ThunderstormIcon /> },
   { href: '/advisories', label: 'Advisories', icon: <CampaignIcon /> },
+  { href: '/schemes', label: 'Govt Schemes', icon: <AccountBalanceIcon /> },
+  { href: '/suppliers', label: 'Suppliers', icon: <HandymanIcon /> },
   { href: '/notifications', label: 'Notifications', icon: <NotificationsIcon /> },
   { href: '/audit-logs', label: 'Audit Log', icon: <HistoryIcon /> },
   { href: '/settings', label: 'Settings', icon: <SettingsIcon /> },

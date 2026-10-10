@@ -5,6 +5,7 @@ import {
   convertArea,
   cropProgressPercent,
   diffInDays,
+  distanceKm,
   expensesByCategory,
   formatDateOnly,
   generateActivitySchedule,
@@ -110,5 +111,18 @@ describe('expenses and profit', () => {
       estimatedProfit: null,
       isEstimate: true,
     });
+  });
+});
+
+describe('geo', () => {
+  it('returns 0 for the same point', () => {
+    expect(distanceKm(23.2324, 87.8615, 23.2324, 87.8615)).toBe(0);
+  });
+
+  it('measures road-trip scale distances', () => {
+    // Bardhaman to Kolkata is roughly 95 km in a straight line.
+    const d = distanceKm(23.2324, 87.8615, 22.5726, 88.3639);
+    expect(d).toBeGreaterThan(85);
+    expect(d).toBeLessThan(95);
   });
 });

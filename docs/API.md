@@ -28,6 +28,8 @@ Base URL: `http://localhost:4000/api` (dev). Interactive Swagger docs are served
 | NotificationType | `CROP_REMINDER`, `WEATHER_ALERT`, `PRICE_ALERT`, `ADVISORY`, `GENERAL` |
 | PriceUnit | `QUINTAL`, `KG` |
 | AlertSeverity | `INFO`, `WARNING`, `SEVERE` |
+| SupplierCategory | `TRACTOR`, `PUMP`, `FERTILIZER`, `SEED`, `PESTICIDE` |
+| SchemeCategory | `INCOME_SUPPORT`, `INSURANCE`, `CREDIT`, `SUBSIDY`, `OTHER` |
 
 These are also exported from `@krishi/shared`.
 
@@ -196,6 +198,14 @@ Results are cached for 1 hour. If the provider fails, the last known data is ret
 | `POST /notifications/read-all` | `204` |
 | `GET /advisories?cropId=&language=` | `Advisory[]`: published only. Defaults to the farmer's language. |
 
+## Suppliers and government schemes
+
+| Method & path | Response |
+|---|---|
+| `GET /suppliers?category=&lat=&lon=&farmId=&radiusKm=50` | `{ location: {latitude, longitude, label}, radiusKm, items: (Supplier & { distanceKm: number | null })[] }`: active suppliers within `radiusKm` (max 300) of the origin, nearest first, then unmapped suppliers in the farmer's district (`distanceKm: null`). The origin is `lat`/`lon`, else the farm, else the farmer's village or district, resolved the same way as weather. At most 100 items. |
+| `GET /schemes?category=&language=` | `Scheme[]`: published schemes in the farmer's language (or `language`), central (`state: null`) plus the farmer's state. |
+| `GET /schemes/:id` | `Scheme` (published only) |
+
 ## Admin (`role = ADMIN`), prefix `/admin`
 
 Admins sign in through the same OTP flow. A phone number becomes an admin through the `ADMIN_PHONES` env var or the seed script.
@@ -223,6 +233,12 @@ Admins sign in through the same OTP flow. A phone number becomes an admin throug
 | `POST /admin/advisories` | `{ cropId?, title, description, season?, language, state?, district? }` | `Advisory` (draft) |
 | `PUT /admin/advisories/:id` / `DELETE` | | `Advisory` / `204` |
 | `POST /admin/advisories/:id/publish` | `{ notify?: boolean }` | `{ advisory, notified }`. With `notify`, the advisory is sent to matching farmers: those with the crop who use the advisory's language and live in its region. |
+| `GET /admin/suppliers` | `?search=&category=&district=&page=` | Paged `Supplier` |
+| `POST /admin/suppliers` | `{ name, categories: SupplierCategory[], contactPerson?, phone?, address?, village?, district, state, latitude?, longitude?, description?, isVerified?, isActive? }` | `Supplier` |
+| `PUT /admin/suppliers/:id` / `DELETE` | partial of POST | `Supplier` / `204` |
+| `GET /admin/schemes` | `?category=&language=&page=` | Paged `Scheme` |
+| `POST /admin/schemes` | `{ title, summary, category, benefits?, eligibility?, howToApply?, documents?, applyUrl?, helpline?, language, state?, isPublished? }` | `Scheme`. `publishedAt` is set when it is first published. |
+| `PUT /admin/schemes/:id` / `DELETE` | partial of POST | `Scheme` / `204` |
 | `GET /admin/weather-alerts` | `?active=true&page=` | Paged `WeatherAlert` |
 | `POST /admin/weather-alerts` | `{ severity, title, message, language, validFrom, validTo, state?, district?, cropId?, notify? }` | `{ alert, notified }` |
 | `PUT /admin/weather-alerts/:id` / `DELETE` | | |
@@ -232,7 +248,7 @@ Admins sign in through the same OTP flow. A phone number becomes an admin throug
 | `GET /admin/settings` | | `{ languages, areaUnits, soilTypes, seasons, activityTypes, expenseCategories, notificationTypes, priceUnits, severities }` |
 | `POST /admin/jobs/:name/run` | `name` ∈ `reminders`, `weather-check`, `dispatch`, `cleanup` | Runs a background job immediately, for pilots and QA. Returns the job's result. |
 
-Changes to crops, calendar templates, mandis, prices, advisories, alerts and farmer accounts are written to the audit log.
+Changes to crops, calendar templates, mandis, prices, advisories, alerts, suppliers, schemes and farmer accounts are written to the audit log.
 
 ## Behaviour notes
 

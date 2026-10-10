@@ -367,6 +367,31 @@
     "none": "No advice right now. Please check again later.",
     "general": "For all crops"
   },
+  "suppliers": {
+    "title": "Nearby suppliers",
+    "all": "All",
+    "none": "No suppliers found nearby yet. Please check again later.",
+    "near": "Within {{km}} km of {{place}}, nearest first",
+    "distance": "{{km}} km away",
+    "inDistrict": "In your district",
+    "verified": "Verified",
+    "contact": "Contact: {{name}}",
+    "call": "Call",
+    "directions": "Directions"
+  },
+  "schemes": {
+    "title": "Government schemes",
+    "detailTitle": "Scheme details",
+    "none": "No scheme information yet. Please check again later.",
+    "central": "All India",
+    "benefits": "Benefits",
+    "eligibility": "Who can apply",
+    "howToApply": "How to apply",
+    "documents": "Documents needed",
+    "openWebsite": "Open official website",
+    "callHelpline": "Call helpline {{number}}",
+    "disclaimer": "Rules and amounts can change. Confirm with your block agriculture office before applying."
+  },
   "more": {
     "title": "More",
     "farms": "My farms",
@@ -378,7 +403,11 @@
     "language": "Language",
     "logout": "Log out",
     "logoutTitle": "Log out?",
-    "logoutMessage": "You will need your mobile number and SMS code to log in again."
+    "logoutMessage": "You will need your mobile number and SMS code to log in again.",
+    "suppliers": "Nearby suppliers",
+    "suppliersHint": "Tractor, pump, fertilizer, seed",
+    "schemes": "Government schemes",
+    "schemesHint": "Benefits and how to apply"
   },
   "datePicker": {
     "day": "Day",
@@ -446,6 +475,20 @@
       "PRICE_ALERT": "Price alert",
       "ADVISORY": "Advice",
       "GENERAL": "Message"
+    },
+    "supplierCategory": {
+      "TRACTOR": "Tractor",
+      "PUMP": "Pump",
+      "FERTILIZER": "Fertilizer",
+      "SEED": "Seed",
+      "PESTICIDE": "Pesticide"
+    },
+    "schemeCategory": {
+      "INCOME_SUPPORT": "Income support",
+      "INSURANCE": "Insurance",
+      "CREDIT": "Loan",
+      "SUBSIDY": "Subsidy",
+      "OTHER": "Other"
     }
   }
 }

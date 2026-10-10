@@ -1,4 +1,4 @@
-import type { CropSeason, FarmerCropStatus } from '@krishi/shared';
+import type { CropSeason, FarmerCropStatus, SchemeCategory, SupplierCategory } from '@krishi/shared';
 import { request } from './client';
 import type {
   Activity,
@@ -21,9 +21,11 @@ import type {
   MandiCropPrices,
   MandiPrice,
   AppNotification,
+  NearbySuppliers,
   NotificationPage,
   Profit,
   RefreshResponse,
+  Scheme,
   SendOtpResponse,
   UpdateFarmerCropBody,
   UpdateProfileBody,
@@ -37,6 +39,11 @@ export interface WeatherQuery {
   farmId?: string;
   lat?: number;
   lon?: number;
+}
+
+export interface SupplierQuery extends WeatherQuery {
+  category?: SupplierCategory;
+  radiusKm?: number;
 }
 
 export interface MandiPriceQuery {
@@ -141,5 +148,14 @@ export const api = {
 
   advisories: {
     list: (q: { cropId?: string; language?: string } = {}) => request<Advisory[]>('/advisories', { query: q }),
+  },
+
+  suppliers: {
+    nearby: (q: SupplierQuery) => request<NearbySuppliers>('/suppliers', { query: { ...q } }),
+  },
+
+  schemes: {
+    list: (q: { language?: string; category?: SchemeCategory } = {}) => request<Scheme[]>('/schemes', { query: q }),
+    get: (schemeId: string) => request<Scheme>(`/schemes/${id(schemeId)}`),
   },
 };

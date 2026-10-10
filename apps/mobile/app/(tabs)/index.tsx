@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '@/api/hooks';
+import { useDashboard, useWeatherCurrent } from '@/api/hooks';
 import type { Dashboard } from '@/api/types';
 import { useAuth } from '@/auth/AuthContext';
 import {
@@ -18,6 +18,7 @@ import {
 } from '@/components';
 import { CropCard, MandiPriceCard, TaskItem, WeatherNow } from '@/features/Cards';
 import { formatMoney } from '@/lib/format';
+import { useDeviceLocation } from '@/lib/location';
 import { colors, spacing } from '@/theme';
 
 function greetingKey(): 'home.greetingMorning' | 'home.greetingAfternoon' | 'home.greetingEvening' {
@@ -49,6 +50,9 @@ export default function HomeScreen() {
 function DashboardBody({ data }: { data: Dashboard }) {
   const { t } = useTranslation();
   const profit = data.totals.estimatedProfit;
+  // Prefer weather at the phone's live location; the dashboard's farm-based weather is the fallback.
+  const { coords } = useDeviceLocation();
+  const gpsWeather = useWeatherCurrent(coords ?? {}, !!coords);
 
   return (
     <>
@@ -112,7 +116,15 @@ function DashboardBody({ data }: { data: Dashboard }) {
         </>
       ) : null}
 
-      {data.weather ? (
+      {gpsWeather.data ? (
+        <WeatherNow
+          current={gpsWeather.data.current}
+          fetchedAt={gpsWeather.data.fetchedAt}
+          isStale={gpsWeather.data.isStale}
+          label={t('weather.myLocation')}
+          onPress={() => router.push('/weather')}
+        />
+      ) : data.weather ? (
         <WeatherNow
           current={data.weather.current}
           fetchedAt={data.weather.fetchedAt}

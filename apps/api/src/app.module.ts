@@ -6,6 +6,7 @@ import { ActivitiesController } from './activities/activities.controller';
 import { ActivitiesService } from './activities/activities.service';
 import { AdminContentController } from './admin/admin-content.controller';
 import { AdminCropsController } from './admin/admin-crops.controller';
+import { AdminDirectoryController } from './admin/admin-directory.controller';
 import { AdminFarmersController } from './admin/admin-farmers.controller';
 import { AdminMandiController } from './admin/admin-mandi.controller';
 import { AdminOverviewController } from './admin/admin-overview.controller';
@@ -18,6 +19,8 @@ import { SerializeInterceptor } from './common/interceptors/serialize.intercepto
 import { AppConfigModule } from './config/config.module';
 import { CropsController } from './crops/crops.controller';
 import { DashboardController } from './dashboard/dashboard.controller';
+import { SchemesController } from './directory/schemes.controller';
+import { SuppliersController } from './directory/suppliers.controller';
 import { ExpensesController } from './expenses/expenses.controller';
 import { ExpensesService } from './expenses/expenses.service';
 import { FarmerCropsController } from './farmer-crops/farmer-crops.controller';
@@ -60,11 +63,14 @@ import { WeatherService } from './weather/weather.service';
     DashboardController,
     NotificationsController,
     AdvisoriesController,
+    SuppliersController,
+    SchemesController,
     AdminOverviewController,
     AdminFarmersController,
     AdminCropsController,
     AdminMandiController,
     AdminContentController,
+    AdminDirectoryController,
   ],
   providers: [
     FarmsService,

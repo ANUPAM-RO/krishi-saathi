@@ -10,7 +10,9 @@ import type {
   NotificationType,
   PriceUnit,
   Role,
+  SchemeCategory,
   SoilType,
+  SupplierCategory,
 } from '@krishi/shared';
 
 export interface Paged<T> {
@@ -383,4 +385,74 @@ export interface AdminSettings {
   priceUnits: readonly string[];
   severities: readonly string[];
   [key: string]: unknown;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  categories: SupplierCategory[];
+  contactPerson: string | null;
+  phone: string | null;
+  address: string | null;
+  village: string | null;
+  district: string;
+  state: string;
+  latitude: number | null;
+  longitude: number | null;
+  description: string | null;
+  isVerified: boolean;
+  isActive: boolean;
+  source: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplierInput {
+  name: string;
+  categories: SupplierCategory[];
+  contactPerson?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  village?: string | null;
+  district: string;
+  state: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  description?: string | null;
+  isVerified?: boolean;
+  isActive?: boolean;
+}
+
+export interface Scheme {
+  id: string;
+  title: string;
+  summary: string;
+  category: SchemeCategory;
+  benefits: string | null;
+  eligibility: string | null;
+  howToApply: string | null;
+  documents: string | null;
+  applyUrl: string | null;
+  helpline: string | null;
+  language: Language;
+  state: string | null;
+  isPublished: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SchemeInput {
+  title: string;
+  summary: string;
+  category: SchemeCategory;
+  benefits?: string | null;
+  eligibility?: string | null;
+  howToApply?: string | null;
+  documents?: string | null;
+  applyUrl?: string | null;
+  helpline?: string | null;
+  language: Language;
+  state?: string | null;
+  isPublished?: boolean;
 }

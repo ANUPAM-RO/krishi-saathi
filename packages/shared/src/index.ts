@@ -3,3 +3,4 @@ export * from './dates';
 export * from './area';
 export * from './calendar';
 export * from './profit';
+export * from './geo';

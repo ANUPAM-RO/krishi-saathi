@@ -96,6 +96,22 @@ enum AlertSeverity {
   SEVERE
 }
 
+enum SupplierCategory {
+  TRACTOR
+  PUMP
+  FERTILIZER
+  SEED
+  PESTICIDE
+}
+
+enum SchemeCategory {
+  INCOME_SUPPORT
+  INSURANCE
+  CREDIT
+  SUBSIDY
+  OTHER
+}
+
 // ---------- Identity & auth ----------
 
 model User {
@@ -456,4 +472,58 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ---------- Directory: suppliers & government schemes ----------
+
+/// A local business farmers can contact: tractor hire, pump sales/repair, fertilizer, seed or pesticide shop.
+model Supplier {
+  id            String             @id @default(uuid())
+  name          String
+  /// What the supplier offers; a shop often sells several (e.g. seed and fertilizer).
+  categories    SupplierCategory[]
+  contactPerson String?            @map("contact_person")
+  phone         String?
+  address       String?
+  village       String?
+  district      String
+  state         String
+  latitude      Float?
+  longitude     Float?
+  description   String?
+  /// Checked by the team (phone answered, shop exists). Shown as a badge in the app.
+  isVerified    Boolean            @default(false) @map("is_verified")
+  isActive      Boolean            @default(true) @map("is_active")
+  /// Where the entry came from, e.g. "admin", "sample-seed".
+  source        String             @default("admin")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  @@index([state, district])
+  @@map("suppliers")
+}
+
+/// Government scheme information, written in one language per row (like advisories).
+model GovernmentScheme {
+  id          String         @id @default(uuid())
+  title       String
+  summary     String
+  category    SchemeCategory
+  benefits    String?
+  eligibility String?
+  howToApply  String?        @map("how_to_apply")
+  documents   String?
+  applyUrl    String?        @map("apply_url")
+  helpline    String?
+  language    Language
+  /// null = central (all-India) scheme; otherwise the state that runs it.
+  state       String?
+  isPublished Boolean        @default(false) @map("is_published")
+  publishedAt DateTime?      @map("published_at")
+  createdById String?        @map("created_by_id")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  @@index([language, isPublished])
+  @@map("government_schemes")
 }
